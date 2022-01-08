@@ -1,4 +1,5 @@
 import os
+import subprocess
 from glob import glob
 from json import dump
 from pathlib import Path
@@ -16,63 +17,63 @@ from .utils import *
 
 # add language as param
 def make_video(
-    # required
-    data: list = DATA,
-    blacklist: list = BLACKLIST,
-    # other
-    path: str = get_path(),
-    check_version: bool = CHECK_VERSION,
-    # twitch
-    client_id: str = CLIENT_ID,
-    oauth_token: str = OAUTH_TOKEN,
-    period: int = PERIOD,
-    language: str = LANGUAGE,
-    limit: int = LIMIT,
-    # selenium
-    profile_path: str = ROOT_PROFILE_PATH,
-    executable_path: str = EXECUTABLE_PATH,
-    sleep: int = SLEEP,
-    headless: bool = HEADLESS,
-    debug: bool = DEBUG,
-    # video options
-    render_video: bool = RENDER_VIDEO,
-    file_name: str = FILE_NAME,
-    resolution: tuple = RESOLUTION,
-    frames: int = FRAMES,
-    video_length: float = VIDEO_LENGTH,
-    resize_clips: bool = RESIZE_CLIPS,
-    enable_intro: bool = ENABLE_INTRO,
-    resize_intro: bool = RESIZE_INTRO,
-    intro_path: str = INTRO_FILE_PATH,
-    enable_transition: bool = ENABLE_TRANSITION,
-    resize_transition: bool = RESIZE_TRANSITION,
-    transition_path: str = TRANSITION_FILE_PATH,
-    enable_outro: bool = ENABLE_OUTRO,
-    resize_outro: bool = RESIZE_OUTRO,
-    outro_path: str = OUTRO_FILE_PATH,
-    # other options
-    save_file: bool = SAVE_TO_FILE,
-    save_file_name: str = SAVE_FILE_NAME,
-    upload_video: bool = UPLOAD_TO_YOUTUBE,
-    delete_clips: bool = DELETE_CLIPS,
-    # youtube
-    title: str = TITLE,
-    description: str = DESCRIPTION,
-    thumbnail: str = THUMBNAIL,
-    tags: list = TAGS,
+        # required
+        data: list = DATA,
+        blacklist: list = BLACKLIST,
+        # other
+        path: str = get_path(),
+        check_version: bool = CHECK_VERSION,
+        # twitch
+        client_id: str = CLIENT_ID,
+        oauth_token: str = OAUTH_TOKEN,
+        period: int = PERIOD,
+        language: str = LANGUAGE,
+        limit: int = LIMIT,
+        # selenium
+        profile_path: str = ROOT_PROFILE_PATH,
+        executable_path: str = EXECUTABLE_PATH,
+        sleep: int = SLEEP,
+        headless: bool = HEADLESS,
+        debug: bool = DEBUG,
+        # video options
+        render_video: bool = RENDER_VIDEO,
+        file_name: str = FILE_NAME,
+        resolution: tuple = RESOLUTION,
+        frames: int = FRAMES,
+        video_length: float = VIDEO_LENGTH,
+        resize_clips: bool = RESIZE_CLIPS,
+        enable_intro: bool = ENABLE_INTRO,
+        resize_intro: bool = RESIZE_INTRO,
+        intro_path: str = INTRO_FILE_PATH,
+        enable_transition: bool = ENABLE_TRANSITION,
+        resize_transition: bool = RESIZE_TRANSITION,
+        transition_path: str = TRANSITION_FILE_PATH,
+        enable_outro: bool = ENABLE_OUTRO,
+        resize_outro: bool = RESIZE_OUTRO,
+        outro_path: str = OUTRO_FILE_PATH,
+        # other options
+        save_file: bool = SAVE_TO_FILE,
+        save_file_name: str = SAVE_FILE_NAME,
+        upload_video: bool = UPLOAD_TO_YOUTUBE,
+        delete_clips: bool = DELETE_CLIPS,
+        # youtube
+        title: str = TITLE,
+        description: str = DESCRIPTION,
+        thumbnail: str = THUMBNAIL,
+        tags: list = TAGS,
 ) -> None:
     if check_version:
         try:
 
             for project, version in zip(
-                [
-                    "twitchtube",
-                    "opplast",
-                ],
-                [
-                    twitchtube_version,
-                    opplast_version,
-                ],
+                    [
+                        "twitchtube",
+                        "opplast",
+                    ],
+                    [
+                        twitchtube_version,
+                        opplast_version,
+                    ],
             ):
                 current = get_current_version(project)
 
@@ -129,6 +130,7 @@ def make_video(
             limit,
         )
 
+        print(new_clips)
         if new_clips:
             ids += new_ids
             titles += new_titles
@@ -146,6 +148,58 @@ def make_video(
 
     # remove duplicate names
     names = list(dict.fromkeys(names))
+
+    videos = [file for file in glob(path + '/*.mp4', recursive=True) if
+              os.path.getsize(file) > 100]
+    subprocess.call(
+        ['ffmpeg', '-i', videos[0], '-ss', '00:00:01.000', '-vframes', '1', path + f"/thumb1.png"])
+    subprocess.call(
+        ['ffmpeg', '-i', videos[1], '-ss', '00:00:01.000', '-vframes', '1', path + f"/thumb2.png"])
+    subprocess.call(
+        ['ffmpeg', '-i', videos[2], '-ss', '00:00:01.000', '-vframes', '1', path + f"/thumb3.png"])
+    subprocess.call(
+        ['ffmpeg', '-i', videos[3], '-ss', '00:00:01.000', '-vframes', '1', path + f"/thumb4.png"])
+
+    subprocess.call(
+        ['convert', '-resize', '960x540', path + f"/thumb1.png", path + f"/thumb1-resize.png"])
+    subprocess.call(
+        ['convert', '-resize', '960x540', path + f"/thumb2.png", path + f"/thumb2-resize.png"])
+    subprocess.call(
+        ['convert', '-resize', '960x540', path + f"/thumb3.png", path + f"/thumb3-resize.png"])
+    subprocess.call(
+        ['convert', '-resize', '960x540', path + f"/thumb4.png", path + f"/thumb4-resize.png"])
+
+    subprocess.call(
+        ['convert', '-bordercolor', '#fd8b00', '-border', '20', path + f"/thumb1-resize.png",
+         path + f"/thumb_border1.png"])
+    subprocess.call(
+        ['convert', '-bordercolor', '#fd8b00', '-border', '20', path + f"/thumb2-resize.png",
+         path + f"/thumb_border2.png"])
+    subprocess.call(
+        ['convert', '-bordercolor', '#fd8b00', '-border', '20', path + f"/thumb3-resize.png",
+         path + f"/thumb_border3.png"])
+    subprocess.call(
+        ['convert', '-bordercolor', '#fd8b00', '-border', '20', path + f"/thumb4-resize.png",
+         path + f"/thumb_border4.png"])
+
+    subprocess.call(['convert', '-append', path + f"/thumb_border1.png", path + f"/thumb_border2.png",
+                     path + f"/out1.png"])
+    subprocess.call(['convert', '-append', path + f"/thumb_border3.png", path + f"/thumb_border4.png",
+                     path + f"/out2.png"])
+    subprocess.call(
+        ['convert', '+append', path + f"/out1.png", path + f"/out2.png", path + f"/out_final.png"])
+
+    final_thumb = str(pathlib.Path().absolute()).replace("\\",
+                                                         "/") + '/assets/thumbs/' + category + '.png'
+
+    subprocess.call(['magick', 'convert', path + f"/out_final.png",
+                     str(pathlib.Path().absolute()).replace("\\", "/") + "/assets/" + category + ".png",
+                     '-gravity', 'Center', '-geometry', '600x600+1+1', '-composite', final_thumb])
+
+    size = "1280x720!"
+    subprocess.call(['convert', '-density', '300', '-units', 'PixelsPerInch',
+                     final_thumb, '-resize', size, '-density', '72', '-units', 'PixelsPerInch',
+                     final_thumb])
 
     if not title:
         title = titles[0]
@@ -236,20 +290,20 @@ def add_clip(path: str, resolution: tuple, resize: bool = True) -> VideoFileClip
 
 
 def render(
-    path: str,
-    file_name: str,
-    resolution: tuple,
-    frames: int,
-    resize_clips: bool,
-    enable_intro: bool,
-    resize_intro: bool,
-    intro_path: str,
-    enable_transition: bool,
-    resize_transition: bool,
-    transition_path: str,
-    enable_outro: bool,
-    resize_outro: bool,
-    outro_path: str,
+        path: str,
+        file_name: str,
+        resolution: tuple,
+        frames: int,
+        resize_clips: bool,
+        enable_intro: bool,
+        resize_intro: bool,
+        intro_path: str,
+        enable_transition: bool,
+        resize_transition: bool,
+        transition_path: str,
+        enable_outro: bool,
+        resize_outro: bool,
+        outro_path: str,
 ) -> None:
     """
     Concatenates a video with given path.
