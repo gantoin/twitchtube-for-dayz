@@ -34,7 +34,7 @@ def top_clips(headers: dict, params: dict, oauth_token: str) -> requests.Respons
 
 def get(name: str, **args) -> dict:
     response = local[name](**args)
-    print(response)
+
     try:
         return response.json()
     except SyntaxError:

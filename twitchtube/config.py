@@ -21,7 +21,7 @@ CLIENT_ID = ""  # Twitch Client ID
 OAUTH_TOKEN = ""  # Twitch OAuth Token
 PERIOD = 72  # how many hours since the clip's creation should've passed e.g. 24, 48 etc 0 for all time
 LANGUAGE = ""  # en, es, th etc.
-LIMIT = 10  # 1-100
+LIMIT = 100  # 1-100
 
 # selenium
 ROOT_PROFILE_PATH = "/Users/antoinegauthier/Library/Application Support/Firefox/7wtbtw0r.Selenium"  # Path to the Firefox profile where you are logged into YouTube
@@ -55,13 +55,13 @@ SAVE_FILE_NAME = "youtube"  # Name of the file YouTube stuff should be saved to
 UPLOAD_TO_YOUTUBE = True  # If the rendered video should be uploaded to YouTube after rendering (True/False)
 DELETE_CLIPS = True  # If the downloaded clips should be deleted after rendering the video (True/False)
 
-AVANT = "Merci d'avoir regardé la vidéo, n'hésitez pas à liker, partager et vous abonner à la chaine !\n#ZappingDayZ "
+BEFORE = "Thanks for watching!\n#ZappingDayZ "
 today = date.today()
 
 # youtube
 TITLE = f"Zapping DayZ (" + '%02d' % today.day + "/" + '%02d' % today.month + "/" + str(
     today.year) + ")"  # youtube title, leave empty for the first clip's title
-DESCRIPTION = AVANT + "#DayZ #Zapping\n"
+DESCRIPTION = BEFORE + "#DayZ #Zapping\n"
 
 THUMBNAIL = PATH + "/assets/thumbs/game.png"
 TAGS = ["dayz", "dayz pvp", "dayz standalone", "best of dayz", "dayz funny moments", "dayz gameplay", "dayz 2021",
